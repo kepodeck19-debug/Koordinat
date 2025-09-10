@@ -1,0 +1,112 @@
+-- Final GUI Teleport + Save Koordinat (20 Slot) By KING TEMON 👑
+local plr = game.Players.LocalPlayer
+local char = plr.Character or plr.CharacterAdded:Wait()
+local hum = char:WaitForChild("HumanoidRootPart")
+
+local ScreenGui = Instance.new("ScreenGui", plr:WaitForChild("PlayerGui"))
+
+-- Frame utama
+local frame = Instance.new("Frame", ScreenGui)
+frame.Size = UDim2.new(0, 280, 0, 650)
+frame.Position = UDim2.new(0.05, 0, 0.15, 0)
+frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+frame.Active = true
+frame.Draggable = true
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
+
+-- Judul
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, -60, 0, 35)
+title.Position = UDim2.new(0, 10, 0, 0)
+title.Text = "👑 KING TEMON 👑"
+title.TextColor3 = Color3.fromRGB(255, 215, 0)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.TextXAlignment = Enum.TextXAlignment.Left
+
+-- Tombol minimize
+local minimizeBtn = Instance.new("TextButton", frame)
+minimizeBtn.Size = UDim2.new(0, 30, 0, 30)
+minimizeBtn.Position = UDim2.new(1, -40, 0, 3)
+minimizeBtn.Text = "-"
+minimizeBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+minimizeBtn.TextColor3 = Color3.fromRGB(255, 215, 0)
+minimizeBtn.Font = Enum.Font.GothamBold
+minimizeBtn.TextScaled = true
+Instance.new("UICorner", minimizeBtn).CornerRadius = UDim.new(0, 8)
+
+-- Icon minimize
+local iconBtn = Instance.new("TextButton", ScreenGui)
+iconBtn.Size = UDim2.new(0, 60, 0, 60)
+iconBtn.Position = UDim2.new(0.05, 0, 0.15, 0)
+iconBtn.Text = "👑"
+iconBtn.Visible = false
+iconBtn.BackgroundTransparency = 1
+iconBtn.TextColor3 = Color3.fromRGB(255, 215, 0)
+iconBtn.Font = Enum.Font.GothamBold
+iconBtn.TextSize = 40
+iconBtn.Active = true
+iconBtn.Draggable = true
+
+-- Label koordinat
+local coordsLabel = Instance.new("TextLabel", frame)
+coordsLabel.Size = UDim2.new(1, -10, 0, 45)
+coordsLabel.Position = UDim2.new(0, 5, 0, 40)
+coordsLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+coordsLabel.BackgroundTransparency = 1
+coordsLabel.Font = Enum.Font.Code
+coordsLabel.TextSize = 16
+coordsLabel.Text = "X: 0  Y: 0  Z: 0"
+
+-- Update koordinat tiap 0.5 detik
+task.spawn(function()
+    while true do
+        if hum and hum.Parent then
+            local pos = hum.Position
+            coordsLabel.Text = string.format("X: %.2f\nY: %.2f\nZ: %.2f", pos.X, pos.Y, pos.Z)
+        end
+        task.wait(0.5)
+    end
+end)
+
+-- Data posisi
+local savedPos = {}
+
+-- Fungsi bikin tombol
+local function makeButton(txt, order, callback)
+    local btn = Instance.new("TextButton", frame)
+    btn.Size = UDim2.new(0.5, -15, 0, 28)
+    btn.Position = UDim2.new(((order % 2) == 1) and 0 or 0.5, 10, 0, 90 + math.floor((order-1)/2)*32)
+    btn.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+    btn.TextColor3 = Color3.fromRGB(255, 215, 0)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 14
+    btn.Text = txt
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+
+    btn.MouseButton1Click:Connect(callback)
+end
+
+-- Buat tombol Save & Teleport untuk 20 Pos
+for i = 1,20 do
+    makeButton("💾 Save " .. i, (i*2)-1, function()
+        savedPos[i] = hum.Position
+    end)
+    makeButton("🚀 Go " .. i, (i*2), function()
+        if savedPos[i] then
+            hum.CFrame = CFrame.new(savedPos[i])
+        end
+    end)
+end
+
+-- Event tombol minimize
+minimizeBtn.MouseButton1Click:Connect(function()
+    frame.Visible = false
+    iconBtn.Visible = true
+end)
+
+iconBtn.MouseButton1Click:Connect(function()
+    frame.Visible = true
+    iconBtn.Visible = false
+end)
