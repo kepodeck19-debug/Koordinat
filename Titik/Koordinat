@@ -7,7 +7,7 @@ local ScreenGui = Instance.new("ScreenGui", plr:WaitForChild("PlayerGui"))
 
 -- Frame utama
 local frame = Instance.new("Frame", ScreenGui)
-frame.Size = UDim2.new(0, 280, 0, 650)
+frame.Size = UDim2.new(0, 600, 0, 400) -- lebih lebar biar 4 bagian muat
 frame.Position = UDim2.new(0.05, 0, 0.15, 0)
 frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 frame.Active = true
@@ -74,10 +74,10 @@ end)
 local savedPos = {}
 
 -- Fungsi bikin tombol
-local function makeButton(txt, order, callback)
+local function makeButton(txt, x, y, callback)
     local btn = Instance.new("TextButton", frame)
-    btn.Size = UDim2.new(0.5, -15, 0, 28)
-    btn.Position = UDim2.new(((order % 2) == 1) and 0 or 0.5, 10, 0, 90 + math.floor((order-1)/2)*32)
+    btn.Size = UDim2.new(0, 120, 0, 28) -- ukuran fix
+    btn.Position = UDim2.new(0, 20 + (x-1)*140, 0, 90 + (y-1)*32) -- posisi grid
     btn.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
     btn.TextColor3 = Color3.fromRGB(255, 215, 0)
     btn.Font = Enum.Font.GothamBold
@@ -90,10 +90,14 @@ end
 
 -- Buat tombol Save & Teleport untuk 20 Pos
 for i = 1,20 do
-    makeButton("💾 Save " .. i, (i*2)-1, function()
+    local col = math.ceil(i / 5) -- 4 kolom, isi max 5 "posisi"
+    local row = ((i-1) % 5) + 1
+
+    makeButton("💾 Save " .. i, col, row*2-1, function()
         savedPos[i] = hum.Position
     end)
-    makeButton("🚀 Go " .. i, (i*2), function()
+
+    makeButton("🚀 Go " .. i, col, row*2, function()
         if savedPos[i] then
             hum.CFrame = CFrame.new(savedPos[i])
         end
